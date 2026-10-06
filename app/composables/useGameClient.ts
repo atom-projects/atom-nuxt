@@ -96,9 +96,16 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
       return;
     }
 
-    const prefix = "Nitro_LegacyExternalInterface";
+    if (typeof event.data !== "string") {
+      return;
+    }
 
-    if (typeof event.data !== "string" || !event.data.startsWith(prefix)) {
+    const prefix = [
+      "Nitro_LegacyExternalInterface",
+      "Octane_LegacyExternalInterface",
+    ].find((value) => event.data.startsWith(value));
+
+    if (!prefix) {
       return;
     }
 
