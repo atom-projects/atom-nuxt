@@ -1,5 +1,31 @@
 import type { Ref } from "vue";
-import { ApiError, type Data } from "~/utils/api";
+import { ApiError, type Data, type Envelope } from "~/utils/api";
+
+let earlyLaunch: Promise<Envelope<Data<"ClientLaunch">>> | undefined;
+
+/**
+ * Requests the Nitro handoff while the session still loads on a direct visit to
+ * the game page. The backend applies the same auth, ban, 2FA, vote and throttle
+ * checks; the page uses the result on its first launch.
+ */
+export function startEarlyClientLaunch() {
+  const { api, xsrfToken } = useApi();
+
+  // Laravel sets XSRF-TOKEN with the session cookie; without it there is no session to launch.
+  if (!xsrfToken()) {
+    return;
+  }
+
+  earlyLaunch = api<Data<"ClientLaunch">>("/client/launch", "POST", {
+    client: "nitro",
+  });
+
+  earlyLaunch.catch(() => {});
+}
+
+export function discardEarlyClientLaunch() {
+  earlyLaunch = undefined;
+}
 
 export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
   const { t } = useLocale();
@@ -41,10 +67,15 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
 
     url.value = "";
 
+    const pending = earlyLaunch;
+
+    earlyLaunch = undefined;
+
     try {
-      const result = await api<Data<"ClientLaunch">>("/client/launch", "POST", {
-        client: "nitro",
-      });
+      const result = await (pending ??
+        api<Data<"ClientLaunch">>("/client/launch", "POST", {
+          client: "nitro",
+        }));
 
       url.value = safeUrl(result.data.url);
 
