@@ -42,6 +42,15 @@ export function useApi() {
     }
   }
 
+  function xsrfToken(): string {
+    const token = document.cookie
+      .split("; ")
+      .find((value) => value.startsWith("XSRF-TOKEN="))
+      ?.slice(11);
+
+    return token ? decodeURIComponent(token) : "";
+  }
+
   async function request<T = RecordData>(
     path: string,
     method = "GET",
@@ -57,46 +66,64 @@ export function useApi() {
       ...extraHeaders,
     };
 
-    if (write) {
-      // Mutations originate from browser actions; keep Laravel's CSRF cookie fresh.
+    let status = 200;
+
+    let csrfRefreshed = false;
+
+    async function send(): Promise<T> {
+      if (write) {
+        // Laravel renews XSRF-TOKEN on every response, so only ask for one when the browser has none.
+        if (!csrfRefreshed && !xsrfToken()) {
+          await refreshCsrf();
+        }
+
+        const token = xsrfToken();
+
+        if (token) {
+          headers["X-XSRF-TOKEN"] = token;
+        }
+      }
+
+      return fetchRequest<T>(backendUrl(path), {
+        method: method as "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+        body: body as Record<string, unknown> | FormData | undefined,
+        headers: {
+          ...(import.meta.server
+            ? {
+                ...requestHeaders,
+                referer: frontendOrigin,
+                host: new URL(frontendOrigin).host,
+              }
+            : {}),
+          ...headers,
+        },
+        credentials: "include",
+        retry: 0,
+        ignoreResponseError: true,
+
+        onResponse({ response }) {
+          status = response.status;
+        },
+      });
+    }
+
+    async function refreshCsrf(): Promise<void> {
       await $fetch("/sanctum/csrf-cookie", {
         credentials: "include",
         retry: 0,
       });
 
-      const token = document.cookie
-        .split("; ")
-        .find((value) => value.startsWith("XSRF-TOKEN="))
-        ?.slice(11);
-
-      if (token) {
-        headers["X-XSRF-TOKEN"] = decodeURIComponent(token);
-      }
+      csrfRefreshed = true;
     }
 
-    let status = 200;
+    let data = await send();
 
-    const data = await fetchRequest<T>(backendUrl(path), {
-      method: method as "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
-      body: body as Record<string, unknown> | FormData | undefined,
-      headers: {
-        ...(import.meta.server
-          ? {
-              ...requestHeaders,
-              referer: frontendOrigin,
-              host: new URL(frontendOrigin).host,
-            }
-          : {}),
-        ...headers,
-      },
-      credentials: "include",
-      retry: 0,
-      ignoreResponseError: true,
+    // Laravel rejects a stale CSRF token before the controller runs, so one retry with a fresh token is safe.
+    if (write && status === 419 && !csrfRefreshed) {
+      await refreshCsrf();
 
-      onResponse({ response }) {
-        status = response.status;
-      },
-    });
+      data = await send();
+    }
 
     if (status >= 400) {
       const json = data as ApiFailure | undefined;
@@ -144,5 +171,5 @@ export function useApi() {
     return request<Envelope<T>>(`/api/v1${path}`, method, body, headers);
   }
 
-  return { request, api, backendUrl, mediaUrl, safeUrl };
+  return { request, api, backendUrl, mediaUrl, safeUrl, xsrfToken };
 }
