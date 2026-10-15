@@ -18,7 +18,10 @@ const {
 </script>
 
 <template>
-  <main class="fixed inset-0 size-full overflow-hidden bg-[#262a35]">
+  <main
+    class="fixed inset-0 size-full overflow-hidden"
+    style="background-color: #0e151c"
+  >
     <ClientToolbar
       :busy="busy"
       :fullscreen="fullscreen"
@@ -65,31 +68,27 @@ const {
     </section>
 
     <section
-      v-else-if="!url"
+      v-else-if="!url && !busy"
       class="flex h-full flex-col items-center justify-center gap-4 px-6 py-[72px] text-center [&_h2]:text-2xl"
     >
-      <p v-if="busy">{{ t("Connecting to the hotel…") }}</p>
+      <p>{{ error || t("The hotel client is not configured yet.") }}</p>
 
-      <template v-else>
-        <p>{{ error || t("The hotel client is not configured yet.") }}</p>
+      <a
+        v-if="voteUrl"
+        class="flex items-center justify-center gap-1 rounded border-2 border-[#cf9d15] bg-[#eeb425] px-2 py-1 text-sm font-normal text-white transition-colors duration-150 ease-in-out hover:bg-[#e3aa1e] hover:text-white hover:filter-none [&_svg]:size-5"
+        :href="voteUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ t("Vote for the hotel") }}
+      </a>
 
-        <a
-          v-if="voteUrl"
-          class="flex items-center justify-center gap-1 rounded border-2 border-[#cf9d15] bg-[#eeb425] px-2 py-1 text-sm font-normal text-white transition-colors duration-150 ease-in-out hover:bg-[#e3aa1e] hover:text-white hover:filter-none [&_svg]:size-5"
-          :href="voteUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {{ t("Vote for the hotel") }}
-        </a>
-
-        <button
-          class="flex items-center justify-center gap-1 rounded border-2 border-[#cf9d15] bg-[#eeb425] px-2 py-1 text-sm font-normal text-white transition-colors duration-150 ease-in-out hover:bg-[#e3aa1e] hover:text-white hover:filter-none [&_svg]:size-5"
-          @click="reload"
-        >
-          {{ t("Try again") }}
-        </button>
-      </template>
+      <button
+        class="flex items-center justify-center gap-1 rounded border-2 border-[#cf9d15] bg-[#eeb425] px-2 py-1 text-sm font-normal text-white transition-colors duration-150 ease-in-out hover:bg-[#e3aa1e] hover:text-white hover:filter-none [&_svg]:size-5"
+        @click="reload"
+      >
+        {{ t("Try again") }}
+      </button>
     </section>
 
     <section
