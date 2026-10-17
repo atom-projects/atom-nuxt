@@ -1,4 +1,4 @@
-import { ApiError, type Data } from "~/utils/api";
+import { ApiError, type Data, type Envelope } from "~/utils/api";
 
 interface AvatarOptions {
   direction?: number;
@@ -28,11 +28,16 @@ export function useSession() {
   const { api, safeUrl } = useApi();
 
   async function initialize(): Promise<void> {
+    // Request the viewer alongside the bootstrap; its result is applied once the bootstrap has landed.
+    const user = api<Data<"Me">>("/me");
+
+    user.catch(() => {});
+
     session.bootstrap = (await api<Data<"Bootstrap">>("/bootstrap")).data;
 
     session.user = session.bootstrap.viewer;
 
-    await refreshUser();
+    await applyUser(user);
 
     if (!session.user && session.bootstrap.maintenance) {
       session.restriction = "maintenance";
@@ -41,9 +46,13 @@ export function useSession() {
     session.ready = true;
   }
 
-  async function refreshUser(): Promise<void> {
+  function refreshUser(): Promise<void> {
+    return applyUser(api<Data<"Me">>("/me"));
+  }
+
+  async function applyUser(user: Promise<Envelope<Data<"Me">>>): Promise<void> {
     try {
-      session.user = (await api<Data<"Me">>("/me")).data;
+      session.user = (await user).data;
 
       session.restriction = "";
 
@@ -53,6 +62,8 @@ export function useSession() {
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
         session.user = null;
+
+        session.bootstrap.viewer = null;
       } else if (
         error instanceof ApiError &&
         ["two_factor_required", "account_banned", "maintenance"].includes(

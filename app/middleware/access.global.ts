@@ -4,26 +4,28 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { locale, setLocale } = useLocale();
 
   if (!session.ready) {
-    await setLocale(locale.value);
-
-    try {
-      await initialize();
-    } catch {
-      throw createError({
-        statusCode: 503,
-        statusMessage:
-          "The hotel is temporarily unavailable. Please try again.",
-      });
-    }
+    await Promise.all([
+      setLocale(locale.value),
+      initialize().catch(() => {
+        throw createError({
+          statusCode: 503,
+          statusMessage:
+            "The hotel is temporarily unavailable. Please try again.",
+        });
+      }),
+    ]);
   }
 
   const redirect = accessDestination(to.path, !!to.meta.auth, session);
 
   if (redirect) {
+    // Keep the AIR launcher marker through redirects such as / to /user/me.
+    const launcher = to.query.launcher === "air" ? { launcher: "air" } : {};
+
     return navigateTo(
       redirect === "/login"
         ? { path: redirect, query: { next: to.fullPath } }
-        : redirect,
+        : { path: redirect, query: launcher },
     );
   }
 });
