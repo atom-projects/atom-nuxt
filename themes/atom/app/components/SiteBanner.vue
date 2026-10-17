@@ -65,6 +65,10 @@ const loginDialog =
         >
           {{ t("Flash client") }}
         </NuxtLink>
+
+        <ClientAirLaunchButton
+          class="relative hidden rounded-full bg-white/90 px-6 py-2 text-lg font-semibold text-black transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-60 dark:bg-gray-900 dark:text-white dark:hover:text-white md:block"
+        />
       </div>
     </div>
 

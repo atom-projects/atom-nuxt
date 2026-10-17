@@ -19,10 +19,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const redirect = accessDestination(to.path, !!to.meta.auth, session);
 
   if (redirect) {
+    // Keep the AIR launcher marker through redirects such as / to /user/me.
+    const launcher = to.query.launcher === "air" ? { launcher: "air" } : {};
+
     return navigateTo(
       redirect === "/login"
         ? { path: redirect, query: { next: to.fullPath } }
-        : redirect,
+        : { path: redirect, query: launcher },
     );
   }
 });

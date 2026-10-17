@@ -28,15 +28,21 @@ export function useApi() {
     return /^https?:\/\//i.test(path) ? path : backendUrl(path);
   }
 
-  function safeUrl(path?: string | null): string {
+  function safeUrl(
+    path?: string | null,
+    protocols: string[] = ["https:", "http:"],
+  ): string {
     if (!path) {
       return "";
     }
 
     try {
-      const url = new URL(mediaUrl(path), frontendOrigin);
+      // Parse schemes as given; mediaUrl would turn them into same-origin paths.
+      const absolute = /^[a-z][a-z\d+.-]*:/i.test(path);
 
-      return ["https:", "http:"].includes(url.protocol) ? url.href : "";
+      const url = new URL(absolute ? path : mediaUrl(path), frontendOrigin);
+
+      return protocols.includes(url.protocol) ? url.href : "";
     } catch {
       return "";
     }
