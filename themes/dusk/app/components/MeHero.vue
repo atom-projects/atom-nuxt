@@ -61,6 +61,10 @@ const portrait = computed(() =>
         >
           {{ t("Go to :hotel", { hotel: session.bootstrap.hotel_name }) }}
         </NuxtLink>
+
+        <ClientAirLaunchButton
+          class="mt-2 block w-full rounded border-2 border-white/40 bg-gray-900/60 px-4 py-2 text-center text-white transition-transform duration-300 hover:scale-[1.02] disabled:opacity-60"
+        />
       </div>
     </div>
 
