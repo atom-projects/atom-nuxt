@@ -5,6 +5,10 @@ export interface AvatarOptions {
   gesture?: string;
   action?: string;
   size?: "s" | "m" | "l" | "b";
+  dance?: number;
+  effect?: number;
+  item?: number;
+  animated?: boolean;
 }
 
 const POSTURES = ["sit", "lay", "wlk"];
@@ -66,9 +70,9 @@ export function avatarVariant(
     POSTURES.includes(action) ? action : "std",
     EXPRESSIONS[action] ?? "none",
     gesture,
-    0,
-    0,
-    0,
-    "still",
+    within(options.dance, 4, 0),
+    within(options.effect, 99999, 0),
+    within(options.item, 99999, 0),
+    options.animated ? "anim" : "still",
   ].join("-");
 }

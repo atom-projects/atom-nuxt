@@ -81,8 +81,16 @@ export function useSession() {
       return "/assets/images/avatar-fallback.png";
     }
 
+    const pose: AvatarOptions = {
+      direction: 2,
+      head_direction: 3,
+      gesture: "sml",
+      size: "m",
+      ...options,
+    };
+
     if (user.avatar) {
-      return `${user.avatar}.${avatarVariant(options, user.gender)}.png`;
+      return `${user.avatar}.${avatarVariant(pose, user.gender)}.png`;
     }
 
     const source = safeUrl(
@@ -94,17 +102,14 @@ export function useSession() {
     }
 
     const url = new URL(source);
+    const { animated, item: _item, ...query } = pose;
 
-    const pose = {
-      direction: 2,
-      head_direction: 3,
-      gesture: "sml",
-      size: "m",
-      ...options,
-    };
-
-    for (const [key, value] of Object.entries(pose)) {
+    for (const [key, value] of Object.entries(query)) {
       url.searchParams.set(key, String(value));
+    }
+
+    if (animated) {
+      url.searchParams.set("img_format", "gif");
     }
 
     return url.href;
