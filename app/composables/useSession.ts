@@ -1,13 +1,5 @@
 import { ApiError, type Data, type Envelope } from "~/utils/api";
-
-interface AvatarOptions {
-  direction?: number;
-  head_direction?: number;
-  headonly?: 0 | 1;
-  gesture?: string;
-  action?: string;
-  size?: "s" | "m" | "l" | "b";
-}
+import { avatarVariant, type AvatarOptions } from "~/utils/avatar";
 
 type Viewer = Pick<Data<"Me">, "id" | "username"> &
   Partial<Data<"Me">> &
@@ -82,11 +74,15 @@ export function useSession() {
   }
 
   function avatar(
-    user?: Partial<Data<"PublicUser">> | null,
+    user?: (Partial<Data<"PublicUser">> & { gender?: string | null }) | null,
     options: AvatarOptions = {},
   ): string {
     if (!user?.look) {
       return "/assets/images/avatar-fallback.png";
+    }
+
+    if (user.avatar) {
+      return `${user.avatar}.${avatarVariant(options, user.gender)}.png`;
     }
 
     const source = safeUrl(
