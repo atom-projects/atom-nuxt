@@ -54,14 +54,6 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
 
   let onlineTimer: ReturnType<typeof setInterval> | undefined;
 
-  useSeoMeta({
-    title: () =>
-      `${session.bootstrap.hotel_name} - ${flashRequested ? "Flash" : "Nitro"}`,
-    robots: "noindex, nofollow",
-  });
-
-  useHead({ bodyAttrs: { class: "overflow-hidden", id: "nitro-client" } });
-
   async function launch() {
     voteUrl.value = "";
 

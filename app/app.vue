@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ClientView from "~/views/ClientView.vue";
+
 const route = useRoute();
 
 const { session } = useSession();
@@ -8,6 +10,8 @@ const { locale } = useLocale();
 const { isDark } = useThemeMode();
 
 const { theme } = useAppConfig();
+
+const clientPresence = useClientPresence();
 
 useHead(() => ({
   htmlAttrs: {
@@ -41,6 +45,15 @@ watch(
 );
 
 watch(
+  () => session.user,
+  (user) => {
+    if (!user) {
+      clientPresence.value = "closed";
+    }
+  },
+);
+
+watch(
   () => route.fullPath,
   () => {
     if (import.meta.client) {
@@ -56,4 +69,14 @@ watch(
   <NuxtLayout>
     <NuxtPage :page-key="(route) => route.fullPath" />
   </NuxtLayout>
+
+  <ClientView
+    v-if="clientPresence !== 'closed'"
+    :class="{ invisible: clientPresence === 'background' }"
+    :inert="clientPresence === 'background'"
+  />
+
+  <ClientReturnButton
+    v-if="clientPresence === 'background' && route.name !== 'game-client'"
+  />
 </template>
