@@ -50,6 +50,8 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
 
   const flashRequested = route.params.client === "flash";
 
+  const buttonsEnabled = !!session.bootstrap.clients?.buttons_enabled;
+
   let onlineTimer: ReturnType<typeof setInterval> | undefined;
 
   useSeoMeta({
@@ -185,11 +187,13 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
 
     document.addEventListener("fullscreenchange", updateFullscreen);
 
-    void updateOnlineCount();
-
-    onlineTimer = setInterval(() => {
+    if (buttonsEnabled) {
       void updateOnlineCount();
-    }, 15000);
+
+      onlineTimer = setInterval(() => {
+        void updateOnlineCount();
+      }, 15000);
+    }
 
     if (!flashRequested) {
       void run(launch);
@@ -216,6 +220,7 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
     fullscreen,
     onlineCount,
     flashRequested,
+    buttonsEnabled,
     toggleFullscreen,
     handleFrameLoad,
     reload: () => run(launch),
