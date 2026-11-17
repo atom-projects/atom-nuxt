@@ -34,6 +34,8 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
 
   const { session } = useSession();
 
+  const { logout } = useLogout();
+
   const route = useRoute();
 
   const { busy, error, run } = usePage();
@@ -134,6 +136,7 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
     const prefix = [
       "Nitro_LegacyExternalInterface",
       "Octane_LegacyExternalInterface",
+      "Volt_LegacyExternalInterface",
     ].find((value) => event.data.startsWith(value));
 
     if (!prefix) {
@@ -143,13 +146,14 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
     try {
       const message: unknown = JSON.parse(event.data.slice(prefix.length));
 
-      if (
-        message &&
-        typeof message === "object" &&
-        "method" in message &&
-        message.method === "disconnect"
-      ) {
+      if (!message || typeof message !== "object" || !("method" in message)) {
+        return;
+      }
+
+      if (message.method === "disconnect") {
         disconnected.value = true;
+      } else if (message.method === "logout") {
+        void run(logout);
       }
     } catch {
       /* Ignore malformed messages from the game frame. */
