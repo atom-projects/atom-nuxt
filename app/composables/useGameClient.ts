@@ -36,6 +36,8 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
 
   const { logout } = useLogout();
 
+  const nitroMounted = useNitroMounted();
+
   const route = useRoute();
 
   const { busy, error, run } = usePage();
@@ -196,11 +198,16 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
     }, 15000);
 
     if (!flashRequested) {
+      nitroMounted.value = true;
       void run(launch);
     }
   });
 
   onBeforeUnmount(() => {
+    if (!flashRequested) {
+      nitroMounted.value = false;
+    }
+
     if (onlineTimer) {
       clearInterval(onlineTimer);
     }

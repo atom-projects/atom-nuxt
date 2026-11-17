@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const props = defineProps<{ to: string }>();
 
+const nitroMounted = useNitroMounted();
+
 const gameWindow = "hotel-client";
 
 /** The game gets its own tab, so logging out in the hotel can close it and keep this page. */
@@ -15,7 +17,7 @@ function open(event: MouseEvent) {
     return;
   }
 
-  if (window.name === gameWindow || document.getElementById("nitro")) {
+  if (window.name === gameWindow || nitroMounted.value) {
     event.preventDefault();
 
     void navigateTo(props.to);
