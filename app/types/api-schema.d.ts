@@ -1154,6 +1154,7 @@ export interface components {
             username: string;
             motto: string;
             look: string;
+            avatar?: string | null;
             online: boolean;
         };
         Money: {
@@ -1279,6 +1280,7 @@ export interface components {
             username: string;
             motto: string;
             look: string;
+            avatar?: string | null;
             online: boolean;
             mail: string;
             balances: {
@@ -1636,6 +1638,7 @@ export interface components {
             user: {
                 username: string;
                 look: string;
+                avatar?: string | null;
             } | null;
         };
         BanInfo: {
@@ -1648,6 +1651,7 @@ export interface components {
             username: string;
             motto: string;
             look: string;
+            avatar?: string | null;
             online: boolean;
             last_online: number;
         };

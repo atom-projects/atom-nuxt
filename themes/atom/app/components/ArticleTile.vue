@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Data } from "~/utils/api";
 
-const { mediaUrl, safeUrl } = useApi();
+const { mediaUrl } = useApi();
 
 const { avatar, session } = useSession();
 
@@ -38,13 +38,7 @@ defineProps<{ article: Data<"Article">; forSlider?: boolean }>();
             class="mt-3 flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800"
           >
             <img
-              :src="
-                article.author?.look
-                  ? safeUrl(
-                      `${session.bootstrap.assets?.avatar || ''}${encodeURIComponent(article.author.look)}&headonly=1`,
-                    )
-                  : avatar(article.author)
-              "
+              :src="avatar(article.author, { headonly: 1 })"
               alt=""
             />
           </div>

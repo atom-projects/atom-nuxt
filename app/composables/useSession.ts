@@ -1,13 +1,5 @@
 import { ApiError, type Data, type Envelope } from "~/utils/api";
-
-interface AvatarOptions {
-  direction?: number;
-  head_direction?: number;
-  headonly?: 0 | 1;
-  gesture?: string;
-  action?: string;
-  size?: "s" | "m" | "l" | "b";
-}
+import { avatarVariant, type AvatarOptions } from "~/utils/avatar";
 
 type Viewer = Pick<Data<"Me">, "id" | "username"> &
   Partial<Data<"Me">> &
@@ -82,11 +74,23 @@ export function useSession() {
   }
 
   function avatar(
-    user?: Partial<Data<"PublicUser">> | null,
+    user?: (Partial<Data<"PublicUser">> & { gender?: string | null }) | null,
     options: AvatarOptions = {},
   ): string {
     if (!user?.look) {
       return "/assets/images/avatar-fallback.png";
+    }
+
+    const pose: AvatarOptions = {
+      direction: 2,
+      head_direction: 3,
+      gesture: "sml",
+      size: "m",
+      ...options,
+    };
+
+    if (user.avatar) {
+      return `${user.avatar}.${avatarVariant(pose, user.gender)}.png`;
     }
 
     const source = safeUrl(
@@ -98,17 +102,14 @@ export function useSession() {
     }
 
     const url = new URL(source);
+    const { animated, item: _item, ...query } = pose;
 
-    const pose = {
-      direction: 2,
-      head_direction: 3,
-      gesture: "sml",
-      size: "m",
-      ...options,
-    };
-
-    for (const [key, value] of Object.entries(pose)) {
+    for (const [key, value] of Object.entries(query)) {
       url.searchParams.set(key, String(value));
+    }
+
+    if (animated) {
+      url.searchParams.set("img_format", "gif");
     }
 
     return url.href;
