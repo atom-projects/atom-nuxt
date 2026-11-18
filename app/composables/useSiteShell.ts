@@ -3,9 +3,11 @@ export function useSiteShell() {
 
   const { initialize, session, avatar } = useSession();
 
-  const { request, safeUrl } = useApi();
+  const { safeUrl } = useApi();
 
   const { busy, error, run } = usePage();
+
+  const { logout: endSession } = useLogout();
 
   const route = useRoute();
 
@@ -154,11 +156,7 @@ export function useSiteShell() {
   async function logout() {
     openMenu.value = "";
 
-    await run(async () => {
-      await request("/logout", "POST");
-
-      await navigateTo("/", { external: true });
-    });
+    await run(endSession);
   }
 
   async function changeLocale(value: string) {

@@ -51,20 +51,20 @@ const loginDialog =
       </div>
 
       <div class="flex gap-x-4">
-        <NuxtLink
+        <ClientGameLink
           class="relative hidden rounded-full bg-white/90 px-6 py-2 text-lg font-semibold text-black transition duration-300 ease-in-out hover:bg-white hover:text-black dark:bg-gray-900 dark:text-white dark:hover:text-white md:block"
           to="/game/nitro"
         >
           {{ t("Nitro client") }}
-        </NuxtLink>
+        </ClientGameLink>
 
-        <NuxtLink
+        <ClientGameLink
           v-if="session.bootstrap.clients?.flash_enabled"
           class="relative hidden rounded-full bg-white/90 px-6 py-2 text-lg font-semibold text-black transition duration-300 ease-in-out hover:bg-white hover:text-black dark:bg-gray-900 dark:text-white dark:hover:text-white md:block"
           to="/game/flash"
         >
           {{ t("Flash client") }}
-        </NuxtLink>
+        </ClientGameLink>
 
         <ClientAirLaunchButton
           class="relative hidden rounded-full bg-white/90 px-6 py-2 text-lg font-semibold text-black transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-60 dark:bg-gray-900 dark:text-white dark:hover:text-white md:block"

@@ -11,6 +11,7 @@ const {
   fullscreen,
   onlineCount,
   flashRequested,
+  buttonsEnabled,
   toggleFullscreen,
   handleFrameLoad,
   reload,
@@ -23,6 +24,7 @@ const {
     style="background-color: #0e151c"
   >
     <ClientToolbar
+      v-if="buttonsEnabled"
       :busy="busy"
       :fullscreen="fullscreen"
       :online-count="onlineCount"
