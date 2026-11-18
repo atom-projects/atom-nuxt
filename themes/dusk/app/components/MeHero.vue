@@ -55,12 +55,12 @@ const portrait = computed(() =>
       </div>
 
       <div class="w-full self-start lg:ml-14 lg:w-64">
-        <NuxtLink
+        <ClientGameLink
           class="block w-full rounded border-2 border-yellow-300 bg-yellow-500 px-4 py-2 text-center text-white transition-transform duration-300 hover:scale-[1.02] hover:text-white"
           to="/game/nitro"
         >
           {{ t("Go to :hotel", { hotel: session.bootstrap.hotel_name }) }}
-        </NuxtLink>
+        </ClientGameLink>
 
         <ClientAirLaunchButton
           class="mt-2 block w-full rounded border-2 border-white/40 bg-gray-900/60 px-4 py-2 text-center text-white transition-transform duration-300 hover:scale-[1.02] disabled:opacity-60"
