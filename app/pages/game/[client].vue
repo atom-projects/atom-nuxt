@@ -6,8 +6,36 @@ definePageMeta({
   validate: (route) => ["nitro", "flash"].includes(String(route.params.client)),
   auth: true,
 });
+
+const route = useRoute();
+
+const { session } = useSession();
+
+const presence = useClientPresence();
+
+const flashRequested = route.params.client === "flash";
+
+useSeoMeta({
+  title: () =>
+    `${session.bootstrap.hotel_name} - ${flashRequested ? "Flash" : "Nitro"}`,
+  robots: "noindex, nofollow",
+});
+
+useHead({ bodyAttrs: { class: "overflow-hidden", id: "nitro-client" } });
+
+if (!flashRequested) {
+  onMounted(() => {
+    presence.value = "open";
+  });
+
+  onBeforeUnmount(() => {
+    if (presence.value === "open") {
+      presence.value = "background";
+    }
+  });
+}
 </script>
 
 <template>
-  <ClientView />
+  <ClientView v-if="flashRequested" />
 </template>
