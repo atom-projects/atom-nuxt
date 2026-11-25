@@ -13,7 +13,7 @@ const { t } = useLocale();
 
 <template>
   <nav
-    class="absolute top-[calc(1rem+env(safe-area-inset-top))] left-[calc(1rem+env(safe-area-inset-left))] z-10 flex gap-2"
+    class="client-toolbar absolute top-[calc(1rem+env(safe-area-inset-top))] left-[calc(1rem+env(safe-area-inset-left))] z-10 flex gap-2"
     :aria-label="t('Game controls')"
   >
     <NuxtLink
@@ -95,3 +95,12 @@ const { t } = useLocale();
     </span>
   </nav>
 </template>
+
+<style scoped>
+/* Phones get the hotel's own touch HUD; these buttons would cover it. */
+@media (pointer: coarse) and (max-width: 599px), (pointer: coarse) and (max-height: 599px) {
+  .client-toolbar {
+    display: none;
+  }
+}
+</style>
