@@ -1,4 +1,4 @@
-const CACHE = "atom-offline-v1";
+const CACHE = "atom-offline-v2";
 
 const OFFLINE_URL = "/offline.html";
 
