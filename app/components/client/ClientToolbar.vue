@@ -13,7 +13,7 @@ const { t } = useLocale();
 
 <template>
   <nav
-    class="absolute top-4 left-4 z-10 flex gap-2"
+    class="absolute top-[calc(1rem+env(safe-area-inset-top))] left-[calc(1rem+env(safe-area-inset-left))] z-10 flex gap-2"
     :aria-label="t('Game controls')"
   >
     <NuxtLink

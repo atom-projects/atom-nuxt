@@ -21,7 +21,10 @@ useSeoMeta({
   robots: "noindex, nofollow",
 });
 
-useHead({ bodyAttrs: { class: "overflow-hidden", id: "nitro-client" } });
+useHead({
+  htmlAttrs: { class: "overflow-hidden overscroll-none" },
+  bodyAttrs: { class: "overflow-hidden overscroll-none", id: "nitro-client" },
+});
 
 if (!flashRequested) {
   onMounted(() => {

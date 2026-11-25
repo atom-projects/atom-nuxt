@@ -16,11 +16,41 @@ const {
   handleFrameLoad,
   reload,
 } = useGameClient(frame);
+
+const main = useTemplateRef<HTMLElement>("main");
+
+// Follows the visible area so the on-screen keyboard shrinks the game instead of scrolling it away.
+function fitVisualViewport() {
+  const viewport = window.visualViewport;
+
+  if (!viewport || !main.value || Math.abs(viewport.scale - 1) > 0.01) {
+    return;
+  }
+
+  main.value.style.height = `${viewport.height}px`;
+
+  main.value.style.top = `${viewport.offsetTop}px`;
+}
+
+onMounted(() => {
+  fitVisualViewport();
+
+  window.visualViewport?.addEventListener("resize", fitVisualViewport);
+
+  window.visualViewport?.addEventListener("scroll", fitVisualViewport);
+});
+
+onBeforeUnmount(() => {
+  window.visualViewport?.removeEventListener("resize", fitVisualViewport);
+
+  window.visualViewport?.removeEventListener("scroll", fitVisualViewport);
+});
 </script>
 
 <template>
   <main
-    class="fixed inset-0 size-full overflow-hidden"
+    ref="main"
+    class="fixed inset-x-0 top-0 h-dvh w-full touch-manipulation overflow-hidden overscroll-none"
     style="background-color: #0e151c"
   >
     <ClientToolbar
@@ -33,17 +63,21 @@ const {
       @fullscreen="toggleFullscreen"
     />
 
-    <iframe
+    <div
       v-if="url"
-      ref="frame"
-      id="nitro"
-      class="absolute inset-0 m-0 size-full overflow-hidden rounded-none border-0 p-0"
-      :src="url"
-      :title="t('Hotel game client')"
-      allow="fullscreen; autoplay"
-      referrerpolicy="no-referrer"
-      @load="handleFrameLoad"
-    ></iframe>
+      class="absolute inset-0 pt-[env(safe-area-inset-top)] pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)]"
+    >
+      <iframe
+        ref="frame"
+        id="nitro"
+        class="m-0 block size-full overflow-hidden rounded-none border-0 p-0"
+        :src="url"
+        :title="t('Hotel game client')"
+        allow="fullscreen; autoplay; clipboard-read; clipboard-write; screen-wake-lock; web-share"
+        referrerpolicy="no-referrer"
+        @load="handleFrameLoad"
+      ></iframe>
+    </div>
 
     <AppNotice :error="error" />
 
