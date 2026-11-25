@@ -19,6 +19,12 @@ useHead(() => ({
     class: isDark.value ? "dark" : "",
     "data-theme": theme.name,
   },
+  meta: [
+    {
+      name: "apple-mobile-web-app-title",
+      content: session.bootstrap.hotel_name || undefined,
+    },
+  ],
 }));
 
 watch(
@@ -78,5 +84,15 @@ watch(
 
   <ClientReturnButton
     v-if="clientPresence === 'background' && route.name !== 'game-client'"
+  />
+
+  <InstallAppPrompt
+    :placement="
+      route.name === 'game-client'
+        ? 'game'
+        : clientPresence === 'background'
+          ? 'page-raised'
+          : 'page'
+    "
   />
 </template>
