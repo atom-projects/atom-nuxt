@@ -897,3 +897,36 @@ test("avatar poses override configured defaults without duplicate query paramete
     );
   }
 });
+
+test("the web app manifest names the hotel and the service worker is served", async () => {
+  const response = await fetch(`${origin}/manifest.webmanifest`);
+
+  assert.equal(response.status, 200);
+
+  assert.match(
+    response.headers.get("content-type"),
+    /^application\/manifest\+json/,
+  );
+
+  const manifest = await response.json();
+
+  assert.equal(manifest.name, "Theme Test");
+
+  assert.equal(manifest.start_url, "/game/nitro");
+
+  assert.equal(manifest.scope, "/");
+
+  assert.ok(manifest.icons.some((icon) => icon.purpose === "maskable"));
+
+  for (const icon of manifest.icons) {
+    assert.equal((await fetch(`${origin}${icon.src}`)).status, 200);
+  }
+
+  const worker = await fetch(`${origin}/sw.js`);
+
+  assert.equal(worker.status, 200);
+
+  assert.match(worker.headers.get("content-type"), /javascript/);
+
+  assert.equal((await fetch(`${origin}/offline.html`)).status, 200);
+});
