@@ -28,7 +28,7 @@ const arrow = computed(() => {
     return "top";
   }
 
-  return shareInMoreMenu.value ? "bottom-right" : "bottom";
+  return shareInMoreMenu.value ? "bottom-left" : "bottom";
 });
 
 const positions = {
@@ -71,7 +71,7 @@ async function copyLink() {
     :aria-label="t('Install the app')"
   >
     <img
-      src="/pwa/icon-192.png"
+      src="/pwa/apple-touch-icon.png"
       alt=""
       class="size-11 shrink-0 rounded-[10px]"
       width="44"
@@ -89,7 +89,7 @@ async function copyLink() {
     </div>
 
     <button
-      class="min-h-11 shrink-0 rounded-md border-2 border-[#cf9d15] bg-[#eeb425] px-3 py-1 text-sm font-bold text-white hover:bg-[#e3aa1e]"
+      class="min-h-11 shrink-0 whitespace-nowrap rounded-md border-2 border-[var(--accent-border)] bg-[var(--accent)] px-3 py-1 text-sm font-bold text-white hover:brightness-110"
       @click="platform === 'android' ? install() : openGuide()"
     >
       {{ platform === "android" ? t("Install") : t("Show me how") }}
@@ -134,11 +134,11 @@ async function copyLink() {
         class="flex items-center gap-3 bg-[var(--header)] px-4 py-3 [&_h2]:text-base [&_h2]:font-bold"
       >
         <img
-          src="/pwa/icon-192.png"
+          src="/pwa/apple-touch-icon.png"
           alt=""
-          class="size-9 rounded-lg"
-          width="36"
-          height="36"
+          class="size-10 shrink-0 rounded-[9px]"
+          width="40"
+          height="40"
         />
 
         <h2 id="install-guide-title" class="flex-1">
@@ -208,14 +208,11 @@ async function copyLink() {
           </span>
 
           <span v-else-if="shareInMoreMenu && !iPad">
-            {{ t("Tap the More button") }}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" :aria-label="t('More')" role="img">
-              <circle cx="12" cy="12" r="9.5" />
-              <circle cx="7.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
-              <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
-              <circle cx="16.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
+            {{ t("Tap the menu button") }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" :aria-label="t('Menu')" role="img">
+              <path d="M4 7h16M4 12h16M4 17h16" />
             </svg>
-            {{ t("at the bottom right, then tap Share") }}
+            {{ t("on the left of the address bar, then tap Share") }}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" :aria-label="t('Share')" role="img">
               <path d="M12 3v12M8 7l4-4 4 4" />
               <path d="M8.5 10H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-1.5" />
@@ -291,6 +288,8 @@ async function copyLink() {
       :class="{
         'bottom-[calc(0.25rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2':
           arrow === 'bottom',
+        'bottom-[calc(0.25rem+env(safe-area-inset-bottom))] left-[28%] -translate-x-1/2':
+          arrow === 'bottom-left',
         'right-6 bottom-[calc(0.25rem+env(safe-area-inset-bottom))]':
           arrow === 'bottom-right',
         'top-1 right-24 rotate-180': arrow === 'top',
