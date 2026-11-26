@@ -34,6 +34,10 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
 
   const { session } = useSession();
 
+  const { logout } = useLogout();
+
+  const nitroMounted = useNitroMounted();
+
   const route = useRoute();
 
   const { busy, error, run } = usePage();
@@ -50,15 +54,9 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
 
   const flashRequested = route.params.client === "flash";
 
+  const buttonsEnabled = !!session.bootstrap.clients?.buttons_enabled;
+
   let onlineTimer: ReturnType<typeof setInterval> | undefined;
-
-  useSeoMeta({
-    title: () =>
-      `${session.bootstrap.hotel_name} - ${flashRequested ? "Flash" : "Nitro"}`,
-    robots: "noindex, nofollow",
-  });
-
-  useHead({ bodyAttrs: { class: "overflow-hidden", id: "nitro-client" } });
 
   async function launch() {
     voteUrl.value = "";
@@ -134,6 +132,7 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
     const prefix = [
       "Nitro_LegacyExternalInterface",
       "Octane_LegacyExternalInterface",
+      "Volt_LegacyExternalInterface",
     ].find((value) => event.data.startsWith(value));
 
     if (!prefix) {
@@ -143,13 +142,14 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
     try {
       const message: unknown = JSON.parse(event.data.slice(prefix.length));
 
-      if (
-        message &&
-        typeof message === "object" &&
-        "method" in message &&
-        message.method === "disconnect"
-      ) {
+      if (!message || typeof message !== "object" || !("method" in message)) {
+        return;
+      }
+
+      if (message.method === "disconnect") {
         disconnected.value = true;
+      } else if (message.method === "logout") {
+        void run(logout);
       }
     } catch {
       /* Ignore malformed messages from the game frame. */
@@ -185,18 +185,25 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
 
     document.addEventListener("fullscreenchange", updateFullscreen);
 
-    void updateOnlineCount();
-
-    onlineTimer = setInterval(() => {
+    if (buttonsEnabled) {
       void updateOnlineCount();
-    }, 15000);
+
+      onlineTimer = setInterval(() => {
+        void updateOnlineCount();
+      }, 15000);
+    }
 
     if (!flashRequested) {
+      nitroMounted.value = true;
       void run(launch);
     }
   });
 
   onBeforeUnmount(() => {
+    if (!flashRequested) {
+      nitroMounted.value = false;
+    }
+
     if (onlineTimer) {
       clearInterval(onlineTimer);
     }
@@ -216,6 +223,7 @@ export function useGameClient(frame: Ref<HTMLIFrameElement | null>) {
     fullscreen,
     onlineCount,
     flashRequested,
+    buttonsEnabled,
     toggleFullscreen,
     handleFrameLoad,
     reload: () => run(launch),

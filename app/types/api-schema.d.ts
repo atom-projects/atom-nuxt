@@ -1269,6 +1269,7 @@ export interface components {
             clients: {
                 flash_enabled: boolean;
                 air_enabled: boolean;
+                buttons_enabled: boolean;
             };
             payments: {
                 paypal_configured: boolean;
