@@ -38,7 +38,7 @@ export function listenForInstallPrompt() {
   });
 }
 
-function runsInstalled() {
+export function runsInstalled() {
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
     window.matchMedia("(display-mode: fullscreen)").matches ||

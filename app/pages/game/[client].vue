@@ -22,9 +22,9 @@ useSeoMeta({
 });
 
 useHead({
-  htmlAttrs: { class: "overflow-hidden overscroll-none bg-[#0e151c]" },
+  htmlAttrs: { class: "h-full overflow-hidden overscroll-none bg-[#0e151c]" },
   bodyAttrs: {
-    class: "overflow-hidden overscroll-none bg-[#0e151c]",
+    class: "h-full overflow-hidden overscroll-none bg-[#0e151c] p-0",
     id: "nitro-client",
   },
 });
@@ -45,3 +45,9 @@ if (!flashRequested) {
 <template>
   <ClientView v-if="flashRequested" />
 </template>
+
+<style>
+#nitro-client > #__nuxt {
+  height: 100%;
+}
+</style>
