@@ -290,8 +290,6 @@ async function copyLink() {
           arrow === 'bottom',
         'bottom-[calc(0.25rem+env(safe-area-inset-bottom))] left-[28%] -translate-x-1/2':
           arrow === 'bottom-left',
-        'right-6 bottom-[calc(0.25rem+env(safe-area-inset-bottom))]':
-          arrow === 'bottom-right',
         'top-1 right-24 rotate-180': arrow === 'top',
       }"
       aria-hidden="true"
