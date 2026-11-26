@@ -10,7 +10,7 @@ const { t } = useLocale();
 
 const { safeUrl } = useApi();
 
-const { session } = useSession();
+const { avatar, session } = useSession();
 
 const logoFailed = ref(false);
 
@@ -22,11 +22,7 @@ const logo = computed(() =>
 
 function taskAvatar(task: MaintenanceTask) {
   return task.user
-    ? safeUrl(
-        `${session.bootstrap.assets.avatar || ""}${encodeURIComponent(
-          task.user.look,
-        )}&direction=3&head_direction=3&gesture=sml&action=wav&frame=0`,
-      )
+    ? avatar(task.user, { direction: 3, head_direction: 3, action: "wav" })
     : "";
 }
 </script>
