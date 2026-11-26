@@ -65,38 +65,26 @@ async function copyLink() {
 <template>
   <div
     v-if="visible && !guideOpen"
-    class="fixed inset-x-3 z-[90] mx-auto flex max-w-md items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--panel)] p-2.5 text-[var(--text)] shadow-[0_8px_24px_rgb(0_0_0/0.35)]"
+    class="fixed inset-x-3 z-[90] mx-auto grid max-w-md grid-cols-[1fr_auto] items-center gap-x-2 rounded-lg border border-[var(--border)] bg-[var(--panel)] p-2.5 text-[var(--text)] shadow-[0_8px_24px_rgb(0_0_0/0.35)]"
     :class="positions[props.placement]"
     role="region"
     :aria-label="t('Install the app')"
   >
-    <img
-      src="/pwa/apple-touch-icon.png"
-      alt=""
-      class="size-11 shrink-0 rounded-[10px]"
-      width="44"
-      height="44"
-    />
-
-    <div class="min-w-0 flex-1 leading-tight">
-      <p class="line-clamp-2 text-sm font-bold">
+    <div class="flex min-w-0 items-center gap-2">
+      <img
+        src="/pwa/apple-touch-icon.png"
+        alt=""
+        class="size-8 shrink-0 rounded-[7px]"
+        width="32"
+        height="32"
+      />
+      <p class="min-w-0 text-sm leading-tight font-bold [overflow-wrap:anywhere]">
         {{ t("Play :hotel as an app", { hotel }) }}
-      </p>
-
-      <p class="line-clamp-2 text-xs text-[var(--muted)]">
-        {{ t("Full screen, one tap from your Home Screen.") }}
       </p>
     </div>
 
     <button
-      class="min-h-11 shrink-0 whitespace-nowrap rounded-md border-2 border-[var(--accent-border)] bg-[var(--accent)] px-3 py-1 text-sm font-bold text-white hover:brightness-110"
-      @click="platform === 'android' ? install() : openGuide()"
-    >
-      {{ platform === "android" ? t("Install") : t("Show me how") }}
-    </button>
-
-    <button
-      class="size-11 shrink-0 rounded-md border-0 bg-transparent p-0 text-[var(--muted)] hover:text-[var(--text)] hover:brightness-100 [&_svg]:size-5"
+      class="grid size-11 place-items-center justify-self-end rounded-md border-0 bg-transparent p-0 text-[var(--muted)] hover:text-[var(--text)] hover:brightness-100 [&_svg]:size-5"
       :aria-label="t('Not now')"
       :title="t('Not now')"
       @click="dismiss"
@@ -111,6 +99,18 @@ async function copyLink() {
         <path stroke-linecap="round" d="M6 6l12 12M18 6 6 18" />
       </svg>
     </button>
+
+    <div class="col-span-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+      <p class="text-xs leading-tight text-[var(--muted)]">
+        {{ t("Play in full screen.") }}
+      </p>
+      <button
+        class="min-h-11 max-w-full rounded-md border-2 border-[var(--accent-border)] bg-[var(--accent)] px-3 py-1 text-sm font-bold text-white hover:brightness-110"
+        @click="platform === 'android' ? install() : openGuide()"
+      >
+        {{ platform === "android" ? t("Install") : t("Show me how") }}
+      </button>
+    </div>
   </div>
 
   <div
