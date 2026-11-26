@@ -22,8 +22,11 @@ useSeoMeta({
 });
 
 useHead({
-  htmlAttrs: { class: "overflow-hidden overscroll-none" },
-  bodyAttrs: { class: "overflow-hidden overscroll-none", id: "nitro-client" },
+  htmlAttrs: { class: "overflow-hidden overscroll-none bg-[#0e151c]" },
+  bodyAttrs: {
+    class: "overflow-hidden overscroll-none bg-[#0e151c]",
+    id: "nitro-client",
+  },
 });
 
 if (!flashRequested) {
